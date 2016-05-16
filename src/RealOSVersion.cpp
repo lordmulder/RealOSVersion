@@ -196,7 +196,7 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 	if (verify_os_buildNo(SAFE_ADD((*build), 1, MAX_BUILDNO)))
 	{
 		DWORD stepSize = initialize_step_size(MAX_BUILDNO);
-		for (DWORD nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO); (*build) < MAXDWORD; nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO))
+		for (DWORD nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO); (*build) < MAX_BUILDNO; nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO))
 		{
 			TRACE2("Current step size: %1!u!", stepSize);
 			if (verify_os_buildNo(nextBuildNo))
