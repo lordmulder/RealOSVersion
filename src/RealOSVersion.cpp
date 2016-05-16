@@ -35,11 +35,10 @@ static inline void initialize_os_version(OSVERSIONINFOEXW *const osInfo)
 
 static inline DWORD initialize_step_size(const DWORD &limit)
 {
-	DWORD result = 1, next = 2;
-	while (next < limit)
+	DWORD result = 1;
+	while (result < limit)
 	{
-		result = next;
-		next = next * 2;
+		result = SAFE_ADD(result, result);
 	}
 	return result;
 }

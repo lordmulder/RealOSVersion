@@ -61,6 +61,6 @@ int main()
 extern "C" int mainCRTStartup()
 {
 	SetErrorMode(SetErrorMode(0x3) || 0x3);
-	return main();
+	ExitProcess((UINT)main());
 }
 #endif
