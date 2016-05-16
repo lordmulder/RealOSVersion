@@ -134,7 +134,7 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 {
 	static const DWORD MAX_VERSION = 0xFFFF;
 	static const DWORD MAX_BUILDNO = MAXINT;
-	
+
 	OSVERSIONINFOEXW osvi;
 
 	if (get_os_info(&osvi) == FALSE)
@@ -194,23 +194,30 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 	}
 
 	//Build Version
-	DWORD stepSize = initialize_step_size(MAX_BUILDNO);
-	for (DWORD nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO); (*build) < MAXDWORD; nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO))
+	if (verify_os_buildNo(SAFE_ADD((*build), 1, MAX_BUILDNO)))
 	{
-		TRACE("Current step size: %1!u!", stepSize);
-		if (verify_os_buildNo(nextBuildNo))
+		DWORD stepSize = initialize_step_size(MAX_BUILDNO);
+		for (DWORD nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO); (*build) < MAXDWORD; nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO))
 		{
-			*build = nextBuildNo;
-			TRACE("--> Bump build version: " VERSION_STRING, (*major), (*minor), (*build));
-			continue;
+			TRACE("Current step size: %1!u!", stepSize);
+			if (verify_os_buildNo(nextBuildNo))
+			{
+				*build = nextBuildNo;
+				TRACE("--> Bump build version: " VERSION_STRING, (*major), (*minor), (*build));
+				continue;
+			}
+			TRACE("Build version unsupported: %1!u!", nextBuildNo);
+			if (stepSize > 1)
+			{
+				stepSize = stepSize / 2;
+				continue;
+			}
+			break;
 		}
-		TRACE("Build version unsupported: %1!u!", nextBuildNo);
-		if (stepSize > 1)
-		{
-			stepSize = stepSize / 2;
-			continue;
-		}
-		break;
+	}
+	else
+	{
+		TRACE("Build version unsupported: %1!u!", SAFE_ADD((*build), 1, MAX_BUILDNO));
 	}
 
 	if ((*major >= MAX_VERSION) || (*minor >= MAX_VERSION) || (*build >= MAXDWORD))
