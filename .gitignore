@@ -1,0 +1,6 @@
+/obj
+/out
+/bin
+*.suo
+*.opendb
+*.db
