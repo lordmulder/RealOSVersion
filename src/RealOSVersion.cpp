@@ -133,7 +133,7 @@ bool get_fake_os_version(unsigned int *const major, unsigned int *const minor, u
 bool get_real_os_version(unsigned int *const major, unsigned int *const minor, unsigned int *const build)
 {
 	static const DWORD MAX_VERSION = 0xFFFF;
-	static const DWORD MAX_BUILDNO = MAXINT;
+	static const DWORD MAX_BUILDNO = (((DWORD)~((DWORD)0)) >> 1);
 
 	OSVERSIONINFOEXW osvi;
 
@@ -150,21 +150,21 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 	}
 	else
 	{
-		TRACE("Not running on WIN_NT, says get_os_info()");
+		TRACE1("Not running on WIN_NT, says get_os_info()");
 		if (verify_os_version(4, 0))
 		{
-			TRACE("Win9x compat mode detected!");
+			TRACE1("Win9x compat mode detected!");
 			*major = 4;
 			*build = 1381;
 		}
 		else
 		{
-			TRACE("Stopping.");
+			TRACE1("Stopping.");
 			return false;
 		}
 	}
 
-	TRACE("Initial version: " VERSION_STRING, (*major), (*minor), (*build));
+	TRACE2("Initial version: " VERSION_STRING, (*major), (*minor), (*build));
 
 	//Major Version
 	for (DWORD nextMajor = (*major) + 1; nextMajor <= MAX_VERSION; nextMajor++)
@@ -173,10 +173,10 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 		{
 			*major = nextMajor;
 			*minor = 0;
-			TRACE("--> Bump major version: " VERSION_STRING, (*major), (*minor), (*build));
+			TRACE2("--> Bump major version: " VERSION_STRING, (*major), (*minor), (*build));
 			continue;
 		}
-		TRACE("Major version unsupported: %1!u!", nextMajor);
+		TRACE2("Major version unsupported: %1!u!", nextMajor);
 		break;
 	}
 
@@ -186,10 +186,10 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 		if (verify_os_version((*major), nextMinor))
 		{
 			*minor = nextMinor;
-			TRACE("--> Bump minor version: " VERSION_STRING, (*major), (*minor), (*build));
+			TRACE2("--> Bump minor version: " VERSION_STRING, (*major), (*minor), (*build));
 			continue;
 		}
-		TRACE("Minor version unsupported: %1!u!", nextMinor);
+		TRACE2("Minor version unsupported: %1!u!", nextMinor);
 		break;
 	}
 
@@ -199,14 +199,14 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 		DWORD stepSize = initialize_step_size(MAX_BUILDNO);
 		for (DWORD nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO); (*build) < MAXDWORD; nextBuildNo = SAFE_ADD((*build), stepSize, MAX_BUILDNO))
 		{
-			TRACE("Current step size: %1!u!", stepSize);
+			TRACE2("Current step size: %1!u!", stepSize);
 			if (verify_os_buildNo(nextBuildNo))
 			{
 				*build = nextBuildNo;
-				TRACE("--> Bump build version: " VERSION_STRING, (*major), (*minor), (*build));
+				TRACE2("--> Bump build version: " VERSION_STRING, (*major), (*minor), (*build));
 				continue;
 			}
-			TRACE("Build version unsupported: %1!u!", nextBuildNo);
+			TRACE2("Build version unsupported: %1!u!", nextBuildNo);
 			if (stepSize > 1)
 			{
 				stepSize = stepSize / 2;
@@ -217,12 +217,12 @@ bool get_real_os_version(unsigned int *const major, unsigned int *const minor, u
 	}
 	else
 	{
-		TRACE("Build version unsupported: %1!u!", SAFE_ADD((*build), 1, MAX_BUILDNO));
+		TRACE2("Build version unsupported: %1!u!", SAFE_ADD((*build), 1, MAX_BUILDNO));
 	}
 
 	if ((*major >= MAX_VERSION) || (*minor >= MAX_VERSION) || (*build >= MAXDWORD))
 	{
-		TRACE("Overflow was detected!");
+		TRACE1("Overflow was detected!");
 		return false;
 	}
 

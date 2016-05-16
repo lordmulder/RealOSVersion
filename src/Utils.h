@@ -29,9 +29,11 @@
 #define VERSION_STRING "%1!2u!.%2!02u!.%3!06u!"
 
 #if defined(ENABLE_TRACE) && (ENABLE_TRACE)
-#define TRACE(X, ...) PRINTF("[TRACE] " X "\n", __VA_ARGS__)
+#define TRACE1(X) PRINTF("[TRACE] " X "\n")
+#define TRACE2(X,...) PRINTF("[TRACE] " X "\n", __VA_ARGS__)
 #else
-#define TRACE(X ,...) __noop();
+#define TRACE1(X) (0)
+#define TRACE2(X,...) (0)
 #endif //ENABLE_TRACE
 
 void PRINTF(const char * format, ...);

@@ -22,4 +22,4 @@
 #define ROV_VERSION_MAJOR 1
 #define ROV_VERSION_MINOR 1
 
-#define ENABLE_TRACE 1
+#define ENABLE_TRACE 0

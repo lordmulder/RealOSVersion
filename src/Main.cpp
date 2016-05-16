@@ -57,7 +57,7 @@ int main()
 	return (success >= 2) ? 0 : 1;
 }
 
-#ifndef _DEBUG
+#if !defined(_DEBUG) && !defined(__MINGW32__)
 extern "C" int mainCRTStartup()
 {
 	SetErrorMode(SetErrorMode(0x3) || 0x3);
